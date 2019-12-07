@@ -1,0 +1,29 @@
+{
+  "name": "mechanic",
+  "version": "0.0.1",
+  "description": "a simple application with a REST API that can store and manage appointments for a car service center. Appointments should be persisted in a datastore.",
+  "main": "start.js",
+  "scripts": {
+    "test": "mocha ./test/appointments.js",
+    "start": "node start.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "moment": "^2.24.0",
+    "mongoose": "^5.7.13",
+    "morgan": "^1.9.1"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.7.4",
+    "@babel/preset-env": "^7.7.4",
+    "@babel/register": "^7.7.4",
+    "artillery": "^1.6.0-29",
+    "chai": "^4.2.0",
+    "chai-http": "^4.3.0",
+    "faker": "^4.1.0",
+    "mocha": "^6.2.2"
+  }
+}

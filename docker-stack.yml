@@ -1,0 +1,98 @@
+version: '3.2'
+
+services:
+  elasticsearch:
+    image: mechanic-api_elasticsearch:latest
+    volumes:
+      - type: bind
+        source: ./deploy/elasticsearch/config/elasticsearch.yml
+        target: /usr/share/elasticsearch/config/elasticsearch.yml
+        read_only: true
+      - type: volume
+        source: elasticsearch
+        target: /usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    environment:
+      ES_JAVA_OPTS: "-Xmx1024m -Xms1024m"
+      ELASTIC_PASSWORD: $PASSWORD
+    networks:
+      - balance
+    env_file:
+      - .env
+  logstash:
+    image: mechanic-api_logstash:latest
+    volumes:
+      - type: bind
+        source: ./deploy/logstash/config/logstash.yml
+        target: /usr/share/logstash/config/logstash.yml
+        read_only: true
+      - type: bind
+        source: ./deploy/logstash/pipeline
+        target: /usr/share/logstash/pipeline
+        read_only: true
+    environment:
+      LS_JAVA_OPTS: "-Xms108m -Xmx108m"
+    networks:
+      - balance
+    depends_on:
+      - elasticsearch
+    env_file:
+      - .env
+  kibana:
+    image: mechanic-api_kibana:latest
+    volumes:
+      - type: bind
+        source: ./deploy/kibana/config/kibana.yml
+        target: /usr/share/kibana/config/kibana.yml
+        read_only: true
+    ports:
+      - "5601:5601"
+    networks:
+      - balance
+    depends_on:
+      - elasticsearch
+    env_file:
+      - .env
+  mongo:
+    image: mongo
+    networks:
+      - balance
+    ports:
+      - "27017:27017"
+    volumes:
+      - data-volume:/data/db
+  nodeapp:
+    image: mechanic-api_nodeapp:latest
+    deploy:
+      replicas: 5
+      restart_policy:
+        max_attempts: 3
+        condition: on-failure
+      update_config:
+        parallelism: 3
+        delay: 10s
+    ports:
+      - 8080:8080
+    networks:
+      - balance
+    environment:
+      MONGOGB_URL: mongodb://mongo:27017/mechanic
+    depends_on:
+      - mongo
+  nginx:
+    image: mechanic-api_nginx:latest
+    ports:
+      - "80:80"
+    networks:
+      - balance
+    depends_on:
+      - nodeapp
+    restart: always
+networks:
+  balance:
+    driver: overlay
+volumes:
+  elasticsearch:
+  data-volume:
