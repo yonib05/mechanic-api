@@ -1,5 +1,5 @@
 config:
-  target: "localhost:80" //port 80 is configured to use the proxy 8080 will directly access the instance
+  target: "http://localhost:80" #port 80 is configured to use the proxy 8080 will directly access the instance
   phases:
     - duration: 60
       arrivalRate: 20
@@ -16,8 +16,8 @@ scenarios:
           url: "/appointments"
           json:
             name: "{{ name }}"
-            start_date: "{{ start_date }}"
-            end_date: "{{ end_date }}"
+            start_time: "{{ start_date }}"
+            end_time: "{{ end_date }}"
             type: "{{ type }}"
             price: "{{ price }}"
       # Print the data we're sending while debugging the script:
