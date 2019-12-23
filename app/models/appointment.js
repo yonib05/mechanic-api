@@ -38,8 +38,14 @@ AppointmentSchema.pre('save', function (next) {
             {start_time: self.start_time},
             {$and :
                     [
-                        {start_time : {$lt: self.start_time} },
-                        {end_time : {$gt: self.end_time} }
+                        {start_time : {$lte: self.start_time} },
+                        {end_time : {$gte: self.end_time} }
+                    ]
+            },
+            {$and :
+                    [
+                        {start_time : {$gte: self.start_time} },
+                        {end_time : {$gte: self.end_time} }
                     ]
             }
             ]
